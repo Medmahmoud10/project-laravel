@@ -1,0 +1,36 @@
+version: '3'
+services:
+  identification_api:
+    build: .
+    container_name: identification_api
+    ports:
+      - "7562:80"
+    volumes:
+      - ./app:/var/www/html/app/
+      - ./storage:/var/www/html/storage/
+      - ./database:/var/www/html/database/
+      - ./routes:/var/www/html/routes/
+      - ./resources:/var/www/html/resources/
+    restart: always
+
+  db:
+    image: mysql:8.0.27
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    volumes:
+      - identification_db_volume:/var/lib/mysql
+      - ./mysql-initdb.d:/data/application
+    environment:
+      MYSQL_DATABASE: identification_db
+      MYSQL_ROOT_PASSWORD: password
+      UPLOAD_LIMIT: 1G
+      MEMORY_LIMIT: 3000M
+  phpmyadmin:
+    image: phpmyadmin
+    restart: always
+    ports:
+      - 8080:80
+
+volumes:
+  identification_db_volume:
+  identification_api_storage:
